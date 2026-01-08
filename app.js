@@ -22,7 +22,7 @@ import studentRoutes from './routes/student.routes.js';  // ✅ ADD THIS
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 
 // CORS configuration - dono possible frontend ports ko allow kiya
 app.use(cors({
@@ -340,8 +340,8 @@ app.get('/health', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server is running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server is running on port ${PORT}`);
 });
 
 // Presigned URL endpoint for frontend uploads
