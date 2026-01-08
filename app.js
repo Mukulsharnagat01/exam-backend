@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import AuthRoutes from './routes/Auth.routes.js'; // Ye file exist karni chahiye
-import DbCon from './db/db.js'; 
+import DbCon from './db/db.js';
 import { s3Client } from './config/awsConfig.js';
 import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -22,12 +22,12 @@ import studentRoutes from './routes/student.routes.js';  // ✅ ADD THIS
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000; 
+const PORT = process.env.PORT || 3000;
 
 // CORS configuration - dono possible frontend ports ko allow kiya
 app.use(cors({
-  origin: ['http://localhost:3001', 'http://localhost:5173'],
-  credentials: true, 
+  origin: ['https://d1mfl2c745zn7n.cloudfront.net', 'http://localhost:3001', 'http://localhost:5173'],
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -63,41 +63,41 @@ app.post('/api/subjects', async (req, res) => {
   try {
     console.log('📥 Add subject request:', req.body);
     const { subject } = req.body;
-    
+
     if (!subject || !subject.trim()) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Subject name is required' 
+      return res.status(400).json({
+        success: false,
+        message: 'Subject name is required'
       });
     }
-    
+
     const formatted = subject.toLowerCase().replace(/\s+/g, '-');
-    
+
     // Check if subject already exists
     if (examSubjects.includes(formatted)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Subject already exists' 
+      return res.status(400).json({
+        success: false,
+        message: 'Subject already exists'
       });
     }
-    
+
     examSubjects.push(formatted);
     questions[formatted] = [];
-    
+
     console.log('✅ Subject added:', formatted, 'Total subjects:', examSubjects);
-    
-    
-    res.status(201).json({ 
+
+
+    res.status(201).json({
       success: true,
       message: 'Subject added successfully',
-      subjects: examSubjects 
+      subjects: examSubjects
     });
-    
+
   } catch (error) {
     console.error('Add subject error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });
@@ -107,36 +107,36 @@ app.delete('/api/subjects/:subject', authMiddleware, (req, res) => {
   try {
     // ✅ Check if user is admin
     if (req.user.role !== 'admin') {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Only admin can delete subjects' 
+      return res.status(403).json({
+        success: false,
+        message: 'Only admin can delete subjects'
       });
     }
 
     const { subject } = req.params;
-    
+
     // ✅ Check if subject exists
     if (!examSubjects.includes(subject)) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Subject not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'Subject not found'
       });
     }
-    
+
     examSubjects = examSubjects.filter(s => s !== subject);
     delete questions[subject];
-    
-    res.json({ 
+
+    res.json({
       success: true,
-      message: 'Subject deleted successfully', 
-      subjects: examSubjects 
+      message: 'Subject deleted successfully',
+      subjects: examSubjects
     });
-    
+
   } catch (error) {
     console.error('Delete subject error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });
@@ -152,9 +152,9 @@ app.post('/api/questions/:subject', authMiddleware, (req, res) => {
   try {
     // ✅ Check if user is admin or teacher
     if (!['admin', 'teacher'].includes(req.user.role)) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Only admin or teacher can add questions' 
+      return res.status(403).json({
+        success: false,
+        message: 'Only admin or teacher can add questions'
       });
     }
 
@@ -172,17 +172,17 @@ app.post('/api/questions/:subject', authMiddleware, (req, res) => {
     };
 
     questions[subject].push(newQuestion);
-    res.status(201).json({ 
+    res.status(201).json({
       success: true,
       message: 'Question added successfully',
-      question: newQuestion 
+      question: newQuestion
     });
-    
+
   } catch (error) {
     console.error('Add question error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });
@@ -192,9 +192,9 @@ app.delete('/api/questions/:subject/:id', authMiddleware, (req, res) => {
   try {
     // ✅ Check if user is admin or teacher
     if (!['admin', 'teacher'].includes(req.user.role)) {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Only admin or teacher can delete questions' 
+      return res.status(403).json({
+        success: false,
+        message: 'Only admin or teacher can delete questions'
       });
     }
 
@@ -202,16 +202,16 @@ app.delete('/api/questions/:subject/:id', authMiddleware, (req, res) => {
     if (questions[subject]) {
       questions[subject] = questions[subject].filter(q => q.id != id);
     }
-    res.json({ 
+    res.json({
       success: true,
-      message: 'Question deleted successfully' 
+      message: 'Question deleted successfully'
     });
-    
+
   } catch (error) {
     console.error('Delete question error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });
@@ -221,21 +221,21 @@ app.get('/api/admin/submissions', authMiddleware, (req, res) => {
   try {
     // Check if user is admin
     if (req.user.role !== 'admin') {
-      return res.status(403).json({ 
-        success: false, 
-        message: 'Only admin can view submissions' 
+      return res.status(403).json({
+        success: false,
+        message: 'Only admin can view submissions'
       });
     }
     res.json({
       success: true,
       submissions: inMemoryStore.getSubmissions()
     });
-    
+
   } catch (error) {
     console.error('Get submissions error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });
@@ -250,17 +250,17 @@ app.get('/api/student-submissions', authMiddleware, (req, res) => {
       timestamp: sub.timestamp,
       totalQuestions: sub.answers.length
     }));
-    
+
     res.json({
       success: true,
       submissions: summary
     });
-    
+
   } catch (error) {
     console.error('Student submissions error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error' 
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });

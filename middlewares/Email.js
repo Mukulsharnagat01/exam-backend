@@ -2,36 +2,39 @@ import { transporter } from "./Email.confiq.js";
 import { Verification_Email_Template, Welcome_Email_Template } from "./EmailTemplate.js";
 
 
-export const sendVerificationEamil=async(email,verificationCode)=>{
+export const sendVerificationEmail = async (email, verificationCode) => {
     try {
-     const response=   await transporter.sendMail({
-            from: '"Online Exam" <patlePrajju@gmail.com>',
-
-            to : email, // list of receivers
-            subject: "Verify your Email", 
-            text: "Verify your Email", 
-            html: Verification_Email_Template.replace("{verificationCode}",verificationCode)
-        })
-        console.log('Email send Successfully',response)
-    } catch (error) {
-        console.log('Email error',error)
-    }
-}
-export const senWelcomeEmail=async(email,name)=>{
-    try {
-     const response=   await transporter.sendMail({
+        const response = await transporter.sendMail({
             from: '"Online Exam" <patlePrajju@gmail.com>',
 
             to: email, // list of receivers
-            subject: "Welcome  to Online Exam System!", // Subject line
-            text:  `Welcome ${name}! Your email has been verified successfully.`, // plain text body
-            html: Welcome_Email_Template.replace("{name}",name)
+            subject: "Verify your Email",
+            text: "Verify your Email",
+            html: Verification_Email_Template.replace("{verificationCode}", verificationCode)
         })
-        console.log('Email send Successfully',response)
+        console.log('Email send Successfully', response)
     } catch (error) {
-        console.log('Email error',error)
+        console.log('Email error', error)
     }
 }
+export const sendWelcomeEmail = async (email, name) => {
+    try {
+        await transporter.sendMail({
+            from: '"Online Exam" <patlePrajju@gmail.com>',
+            to: email,
+            subject: "Welcome to Online Exam Platform!",
+            html: `
+                <h2>Welcome, ${name || 'User'}!</h2>
+                <p>Thank you for registering on our Online Exam Platform.</p>
+                <p>You can now start taking exams and track your progress.</p>
+                <p>Best regards,<br/>Online Exam Team</p>
+            `
+        });
+        console.log('Welcome email sent to:', email);
+    } catch (error) {
+        console.error('Welcome email error:', error);
+    }
+};
 
 
 // reset
