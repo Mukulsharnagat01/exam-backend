@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 80;
 
 // CORS configuration - dono possible frontend ports ko allow kiya
 app.use(cors({
-  origin: ['http://exam-system-files-prachi.s3-website.ap-south-1.amazonaws.com', 'https://d1mfl2c745zn7n.cloudfront.net', 'http://localhost:3001', 'http://localhost:5173'],
+  origin: ['http://exam-system-files-prachi.s3-website.ap-south-1.amazonaws.com', 'http://d1mfl2c745zn7n.cloudfront.net', 'http://localhost:3001', 'http://localhost:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
